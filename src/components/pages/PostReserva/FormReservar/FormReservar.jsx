@@ -31,6 +31,7 @@ export default class FormReservar extends Component {
       };
       const _reserva = new ReservaController();
 
+      /* CREANDO RESERVA */
       const keyReserva = await _reserva.addReserva(reserva);      
 
       const notificacion = {
@@ -47,11 +48,20 @@ export default class FormReservar extends Component {
 
       const _user = new UserController(this.props.creadorPost.key);
       await _user.addNotificacion(notificacion);
-      await _user.setReserva(keyReserva,reserva);
+      
+      // await _user.setReserva(keyReserva,{
+      //   emisor: reserva.emisor,
+      //   post: reserva.post,
+      //   date: reserva.date
+      // });
 
       /* AGREGANDO RESERVA EN EL USUARIO QUE SOLICITO */
-      _user.setId(this.props.userProfile.key);
-      await _user.setReserva(keyReserva,reserva);
+      // _user.setId(this.props.userProfile.key);
+      // await _user.setReserva(keyReserva,{
+      //   receptor: reserva.receptor,
+      //   post: reserva.post,
+      //   date: reserva.date
+      // });
     
     }catch(e){
       

@@ -7,6 +7,7 @@ import { inject , observer } from 'mobx-react';
 import moment from 'moment';
 
 import UserController from '../../../../controllers/User';
+import ReservaController from '../../../../controllers/Reservas';
 
 @inject('store') @observer
 export default class NotificacionLoading extends Component {
@@ -65,9 +66,26 @@ class Notificacion extends Component {
       verDetalles: false
     });
   }
-  handleConfirmar = () => {
+  handleConfirmar = async () => {
     this.verNotificacion();
-    // this.reserva = new ReservaController();
+    this.reserva = new ReservaController(this.props.notificacion.origen);
+    let reserva = await this.reserva.getReserva();
+    reserva = {
+      ...reserva,
+      confirmacion: true
+    };
+
+    const { key } = reserva; 
+    delete reserva.key;
+    
+    this.reserva.setReserva(reserva);
+    
+    this.user = new UserController(reserva.emisor);
+    this.user.setReserva(key,reserva);
+    
+    this.user.setId(reserva.receptor);
+    this.user.setReserva(key,reserva);
+
   }
   render() {
     const { notificacion } = this.props;
