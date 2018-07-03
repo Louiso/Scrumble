@@ -1,0 +1,49 @@
+.FileUpload{
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.FileUpload input{
+    display: none;
+}
+.FileUpload label{
+    background-color: var(--color-primario);
+    color: var(--color-cuaternario);
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 15px;
+}
+
+.FileUpload .img_preview_container{
+    width: 100%;
+    overflow: hidden;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.FileUpload img{
+    display:block;
+    margin:auto;
+    max-width: 100%;
+}
+@media screen and (max-width: 600px){
+    .FileUpload{
+        width: 100%;
+    }
+    .FileUpload label{
+        font-size: 0.9em;
+    }
+    .FileUpload .img_preview_container{
+        height: 200px;
+    }
+
+    .FileUpload img{
+        max-width: none;
+        max-height: 100%;
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,15 @@
+.PostAdd{
+    width: 60%;
+    margin: auto;
+}
+.PostAdd .FileUpload{
+    margin: auto;
+    width: 20%;
+    font-size: .8em;
+}
+@media screen and (max-width: 600px){
+    .PostAdd .FileUpload{
+        width: 50%;
+        height: 200px;
+    }
+}

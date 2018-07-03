@@ -1,0 +1,11 @@
+.Post{
+    margin: 1%;
+    height: 350px;
+    flex: 1 1 48%;
+}
+
+@media screen and (max-width: 600px){
+    .Post{
+        flex: 1 1 100%;
+    }
+}

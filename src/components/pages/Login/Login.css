@@ -1,0 +1,26 @@
+.Login{
+    height: 80vh;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.Login .login__controls{
+    display: flex;
+    width: 40%;
+    justify-content: space-between;
+}
+.Login .form-group{
+    width: 40%;
+}
+
+@media screen and (max-width: 600px){
+    
+    .Login .form-group{
+        width: 80%;
+    }
+    .Login .login__controls{
+        width: 80%;
+    }
+}

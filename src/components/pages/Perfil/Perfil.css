@@ -1,0 +1,28 @@
+.Perfil{
+    width: 90%;
+    margin: auto;
+    display: flex;
+    flex-flow: row wrap;
+    margin : 20px auto;
+}
+
+.Perfil .Perfil__left{
+    flex: 1 1 40%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.Perfil .Perfil__right{
+    flex: 1 1 60%;
+}
+
+@media screen and (max-width: 600px){
+    .Perfil .Perfil__left{
+        flex: 1 1 100%;   
+    }
+
+    .Perfil .Perfil__right{
+        flex: 1 1 100%;
+    }
+}

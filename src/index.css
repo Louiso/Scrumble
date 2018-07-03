@@ -1,0 +1,12 @@
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
+:root{
+  --primario: 51, 51, 102;
+  --secundario: 255, 95, 95;
+  --terciario: 249, 231, 94;
+  --cuaternario: 240, 240, 240;
+  --color-primario: rgb(var(--primario));
+  --color-secundario: rgb(var(--secundario));
+  --color-terciario: rgb(var(--terciario));
+  --color-cuaternario: rgb(var(--cuaternario));
+  --cellphone: 600px;
+}
