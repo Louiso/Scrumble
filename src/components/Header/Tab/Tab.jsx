@@ -3,7 +3,7 @@ import Radium from 'radium';
 
 import { inject , observer } from 'mobx-react';
 
-import firebase from 'firebase/app';
+import UserController from '../../../controllers/User';
 
 let { Link } = require('react-router-dom');
 
@@ -51,41 +51,37 @@ class Tab extends Component {
 		this.state = {
 			notificaciones : []
 		};
-	}
-	child_added = (snap) => {
-		/* SE GUARDA TODAS LAS NOTIFICACIONES */
-		const notificacion = snap.val();
-		notificacion.key = snap.key;
-		const notificaciones = this.state.notificaciones;
-		notificaciones.push(notificacion);
-		this.setState({
-			notificaciones
-		});
-	}
-	child_changed = (snapChild)=>{
-		const notificacionChanged = snapChild.val();
-		notificacionChanged.key = snapChild.key;
-		let  notificaciones = this.state.notificaciones;
-		notificaciones = notificaciones.map((notificacion)=>{
-			if(notificacion.key === notificacionChanged.key){
-				return notificacionChanged;
-			}else{
-				return notificacion;
-			}
-		});
-		this.setState({
-			notificaciones
-		});
-	}
+	} 
 	componentDidMount(){
 		/* EL USUARIO RECIBE LAS NOTIFICACIONES */
-		this.notificacionesRef = firebase.database().ref(`/profiles/${this.props.user.uid}/notificaciones`);
-		this.notificacionesRef.on('child_added',this.child_added);
-		this.notificacionesRef.on('child_changed', this.child_changed);
+
+		this.user = new UserController(this.props.user.uid);
+		this.user.getNotificationsRealTime(
+			(notificacion) => {
+				console.log(notificacion);
+				const notificaciones = this.state.notificaciones;
+				notificaciones.push(notificacion);
+				this.setState({
+					notificaciones
+				});
+			},
+			(notificacionChanged)=>{
+				let  notificaciones = this.state.notificaciones;
+				notificaciones = notificaciones.map((notificacion)=>{
+					if(notificacion.key === notificacionChanged.key){
+						return notificacionChanged;
+					}else{
+						return notificacion;
+					}
+				});
+				this.setState({
+					notificaciones
+				});
+			});
 	}
+
 	componentWillUnmount(){
-		this.notificacionesRef.off('child_added',this.child_added);
-		this.notificacionesRef.off('child_changed',this.child_changed);
+		this.user.destroy();
 	}
 	render() {
 		const {tab, tabSelected} = this.props;

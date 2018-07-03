@@ -4,7 +4,8 @@ import GroupInput from '../../GroupInput/GroupInput';
 import './Perfil.css';
 
 import { inject , observer } from 'mobx-react';
-import firebase from 'firebase/app';
+
+import UserController from '../../../controllers/User';
 
 @inject('store') @observer
 export default class PerfilLoading extends Component{
@@ -41,12 +42,14 @@ class Perfil extends Component {
 		}
 	}
 
-	componentDidMount(){
-		this.profileRef = firebase.database().ref(`/profiles/${this.props.user.uid}`);
-		this.profileRef.on('value',snap=>{
-			const userProfile = snap.val();			
-			if(userProfile){
-				const { username , descripcion, tipo, urlPhoto , direccion } = userProfile;
+	componentDidMount = async () => {
+
+		this.user = new UserController(this.props.user.uid);
+
+		const userProfile = await this.user.getUserProfile();
+
+		if(userProfile){
+			const { username , descripcion, tipo, urlPhoto , direccion } = userProfile;
 				this.setState({
 					username: username || '',
 					descripcion: descripcion || '',
@@ -54,14 +57,11 @@ class Perfil extends Component {
 					urlPhoto: urlPhoto || '',
 					direccion: direccion || '',
 					definido: tipo!==''? true: false
-				});
-			}
-		});
-		
-
+			});
+		}
 	}
 	componentWillUnmount(){
-		this.profileRef.off('value');
+		this.user.destroy();
 	}
 	saveDownloadURL = (downloadURL) => {
 		this.setState({
@@ -69,7 +69,7 @@ class Perfil extends Component {
 			modificado: true
 		});
 	}
-	handleSubmit = (e) => {
+	handleSubmit = async (e) => {
 		e.preventDefault();
 		let profile = {
 			username: this.state.username,
@@ -99,7 +99,7 @@ class Perfil extends Component {
 			default:
 				break;
 		}
-		this.profileRef.set(profile);
+		await this.user.setUserProfile(profile);
 		this.setState({
 			modificado: false
 		});
