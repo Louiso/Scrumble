@@ -6,7 +6,7 @@ import { inject , observer } from 'mobx-react';
 
 import moment from 'moment';
 
-import firebase from 'firebase/app';
+import UserController from '../../../../controllers/User';
 
 @inject('store') @observer
 export default class NotificacionLoading extends Component {
@@ -29,30 +29,29 @@ class Notificacion extends Component {
       verDetalles: false
     }
   }
-  getEmisorProfileValue = (snap)=>{
-    const emisorProfile = snap.val();
-    emisorProfile.key = snap.key;
+  componentDidMount = async () => {
+    this.user = new UserController(this.props.notificacion.emisor);
+    const emisorProfile = await this.user.getUserProfile(); 
     this.setState({
       emisorProfile
     });
   }
-  componentDidMount(){
-    this.emisorProfileRef = firebase.database().ref(`/profiles/${this.props.notificacion.emisor}`);
-    this.emisorProfileRef.on('value',this.getEmisorProfileValue);
-  }
+
   componentWillUnmount(){
-    this.emisorProfileRef.off('value',this.getEmisorProfileValue);
+    this.user.destroy();
   }
 
   verNotificacion = () => {
-    const notificacionRef = firebase.database().ref(`/profiles/${this.props.user.uid}/notificaciones/${this.props.notificacion.key}`);
+    
+    this.user = new UserController(this.props.user.uid);
     let notificacion = this.props.notificacion;
     notificacion = {
       ...notificacion,
       visto: true
     }
     delete notificacion.key;
-    notificacionRef.set(notificacion);
+    this.user.setNotificacion(this.props.notificacion.key,notificacion);
+  
   }
 
   verDetallesNotificacion = ()=>{
@@ -68,7 +67,7 @@ class Notificacion extends Component {
   }
   handleConfirmar = () => {
     this.verNotificacion();
-    console.log(':v');
+    // this.reserva = new ReservaController();
   }
   render() {
     const { notificacion } = this.props;

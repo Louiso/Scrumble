@@ -58,7 +58,6 @@ class Tab extends Component {
 		this.user = new UserController(this.props.user.uid);
 		this.user.getNotificationsRealTime(
 			(notificacion) => {
-				console.log(notificacion);
 				const notificaciones = this.state.notificaciones;
 				notificaciones.push(notificacion);
 				this.setState({

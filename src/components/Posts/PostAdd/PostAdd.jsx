@@ -7,8 +7,9 @@ import { inject , observer } from 'mobx-react';
 import firebase from 'firebase/app';
 
 import './PostAdd.css';
-import { addUserProfilePost } from '../../../helpers/User';
-import { crearPost } from '../../../helpers/Post';
+
+import PostController from '../../../controllers/Post';
+import UserController from '../../../controllers/User';
 
 @inject('store') @observer
 export default class PostAddLoading extends Component{
@@ -95,14 +96,18 @@ class PostAdd extends Component {
 			return;
 		}else{
 
-			const keyPost =  await crearPost({
+			const _post = new PostController();
+
+			const keyPost =  await _post.addPost({
 				titulo,
 				descripcion,
 				urlPhoto,
 				userId: this.props.user.uid
 			});
 
-			await addUserProfilePost(this.props.user.uid, keyPost , { titulo });
+			const _user = new UserController(this.props.user.uid);
+
+			await _user.setPost(keyPost, { titulo });
 
 			this.setState({
 				messages: [],

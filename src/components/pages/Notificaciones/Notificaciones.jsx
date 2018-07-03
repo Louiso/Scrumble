@@ -17,7 +17,7 @@ export default class NotificacionesLoading extends Component {
     }
     return(
       <div>
-        AQUI DEBERIA DE MANDARME A INICIAR SESION
+        ... Loaging
       </div>
     );
   }
@@ -43,6 +43,19 @@ class Notificaciones extends Component {
           notificaciones
         });
     
+      },
+      (notificacionNueva)=>{
+        let { notificaciones } = this.state;
+        notificaciones = notificaciones.map((notificacion)=>{
+          if(notificacion.key === notificacionNueva.key){
+            return notificacionNueva;
+          }else{
+            return notificacion;
+          }
+        });
+        this.setState({
+          notificaciones
+        });
       }
     );
   }

@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 
 import { inject , observer } from 'mobx-react';
 
-import firebase from 'firebase/app';
+import { Link } from 'react-router-dom';
+
+import UserController from '../../../../controllers/User';
 
 @inject('store') @observer
 export default class BotonReservarLoading extends Component {
@@ -15,7 +17,7 @@ export default class BotonReservarLoading extends Component {
       )
     }
     return(
-      <p><button className="btn btn-lg btn-success">Iniciar Session</button></p>
+      <Link to="/login"><button className="btn btn-lg btn-success">Iniciar Session</button></Link>
     );
   }
 }
@@ -31,18 +33,23 @@ class BotonReservar extends Component {
   value = (snap) => {
     const userProfile = snap.val();
     userProfile.key = snap.key;
+    
+  }
+  componentDidMount = async () => {
+    
+    this.user = new UserController(this.props.user.uid);
+    const userProfile = await this.user.getUserProfile();
     this.props.setUserProfile(userProfile);
     this.setState({
       userProfile
     });
+  
   }
-  componentDidMount(){
-    this.userProfileRef = firebase.database().ref(`/profiles/${this.props.user.uid}`);
-    this.userProfileRef.on('value',this.value);
 
-  }
   componentWillUnmount(){
-    this.userProfileRef.off('value',this.value);
+
+    this.user.destroy();
+  
   }
   render() {
     return (

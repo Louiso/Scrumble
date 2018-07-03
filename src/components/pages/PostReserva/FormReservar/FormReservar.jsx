@@ -4,8 +4,8 @@ import DatePicker from 'react-datepicker';
 import GroupInput from '../../../GroupInput/GroupInput';
 
 import moment from 'moment';
-import { addUserProfileNotificacion } from '../../../../helpers/User';
-import { crearReserva } from '../../../../helpers/Reserva';
+import ReservaController from '../../../../controllers/Reservas';
+import UserController from '../../../../controllers/User';
 
 export default class FormReservar extends Component {
   constructor(props){
@@ -29,8 +29,9 @@ export default class FormReservar extends Component {
         confirmacion  : false                             // para confirma la reserva
 
       };
-      console.log(reserva);
-      const keyReserva = await crearReserva(reserva);
+      const _reserva = new ReservaController();
+
+      const keyReserva = await _reserva.addReserva(reserva);      
 
       const notificacion = {
 
@@ -42,10 +43,16 @@ export default class FormReservar extends Component {
         
       }
 
-      console.log(notificacion);
-      // La notificacion se guarda dentro del anfitrion
-      await addUserProfileNotificacion(this.props.creadorPost.key, notificacion);
-      
+      /* AGREGANDO NOTIFICACION Y RESERVA EN EL CREADOR DEL POST */
+
+      const _user = new UserController(this.props.creadorPost.key);
+      await _user.addNotificacion(notificacion);
+      await _user.setReserva(keyReserva,reserva);
+
+      /* AGREGANDO RESERVA EN EL USUARIO QUE SOLICITO */
+      _user.setId(this.props.userProfile.key);
+      await _user.setReserva(keyReserva,reserva);
+    
     }catch(e){
       
       console.log(e.message);

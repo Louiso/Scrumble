@@ -6,7 +6,9 @@ import './PostReserva.css';
 
 import BotonReservar from './BotonReservar/BotonReservar';
 import FormReservar from './FormReservar/FormReservar';
-import firebase from 'firebase/app';
+
+import PostController from '../../../controllers/Post';
+import UserController from '../../../controllers/User';
 
 export default class PostReserva extends Component {
   constructor(props){
@@ -19,43 +21,34 @@ export default class PostReserva extends Component {
     }
   }
   
-  valueCreatorPost = (snap)=>{
-    const creadorPost = snap.val();
-    creadorPost.key = snap.key;
-    this.setState({
-      creadorPost
-    });
-  }
-
   setUserProfile = (userProfile) => {
     this.setState({
       userProfile
     });
   }
-
-  valuePost = (snap)=>{
-    const post = snap.val();
-    post.key = snap.key;
-    
-    this.creadorPostRef = firebase.database().ref(`/profiles/${post.userId}`);
-    this.creadorPostRef.on('value',this.valueCreatorPost);
-
-    this.setState({
-      post
-    });
-
-
-  }
+ 
   componentDidMount = () => {
 
     /* DATOS DEL POST */
-    this.postRef = firebase.database().ref(`/posts/${this.props.match.params.id}`);
-    this.postRef.on('value',this.valuePost);
+    this.post = new PostController(this.props.match.params.id);
+    this.post.getPostsRealTime(async (post)=>{
     
+      this.user = new UserController(post.userId);
+
+      const creadorPost = await this.user.getUserProfile();
+      
+      this.setState({
+        creadorPost,
+        post
+      });
+  
+  
+    });
+
   }
   componentWillUnmount(){
-    this.postRef.off('value',this.valuePost);
-    this.creadorPostRef.off('value',this.valueCreatorPost);
+    this.post.destroy();
+    this.user.destroy();
   }
   handleReservar = () => {
     this.setState({
@@ -65,7 +58,7 @@ export default class PostReserva extends Component {
   _loading(){
     return (
       <div>
-        
+        ... Loading
       </div>
     );
   }
