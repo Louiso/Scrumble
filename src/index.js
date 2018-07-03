@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom';
 
 import App from './App';
 
-import registerServiceWorker from './registerServiceWorker';
-
 /* AGREGANDO CSS */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'material-design-lite/material.min.css';
@@ -31,4 +29,4 @@ ReactDOM.render(
         <App/>
     </Provider>,
     document.getElementById('root'));
-registerServiceWorker();
+
