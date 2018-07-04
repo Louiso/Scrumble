@@ -175,8 +175,22 @@ class Notificacion extends Component {
           <h5 className = "mb-1">
             {nombreEmisor}{` confirmo su reservacion`}
           </h5>
-        );  
-      break;
+        );
+        break;
+      case 'cancelar':
+        mensaje = (
+          <h5 className = "mb-1">
+            {nombreEmisor}{` no cancelo la reservacion`}
+          </h5>          
+        );
+        break;
+      case 'culminado':
+        mensaje = (
+          <h5 className = "mb-1">
+            {nombreEmisor}{` le agradece por su asistencia`}
+          </h5>          
+        );
+        break;
       default:
         break;
     }
