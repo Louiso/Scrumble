@@ -27,23 +27,20 @@ export default class PostReserva extends Component {
     });
   }
  
-  componentDidMount = () => {
+  componentDidMount = async () => {
 
     /* DATOS DEL POST */
     this.post = new PostController(this.props.match.params.id);
-    this.post.getPostsRealTime(async (post)=>{
+    const post = await this.post.getPost();
     
-      this.user = new UserController(post.userId);
+    this.user = new UserController(post.userId);
+    const creadorPost = await this.user.getUserProfile();
 
-      const creadorPost = await this.user.getUserProfile();
-      
-      this.setState({
-        creadorPost,
-        post
-      });
-  
-  
+    this.setState({
+      creadorPost,
+      post
     });
+      
 
   }
   componentWillUnmount(){

@@ -15,6 +15,11 @@ export default class PostController extends Controller{
 
   }
 
+  getPost(){
+    const ref = this.ref;
+    return this.__getData(ref);
+  }
+
   addPost(post){
     const ref = firebase.database().ref(`/posts`);
     return this.__addData(ref,post);

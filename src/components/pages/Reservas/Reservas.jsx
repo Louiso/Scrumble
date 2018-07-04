@@ -49,16 +49,20 @@ class Reservas extends Component {
         reservas
       });
 
-    },
-    (reservaUpdated)=>{
+    });
+
+    this.reservas.getReservasRealTime(
+      null,
+      (reservaUpdated)=>{
       let { reservas } = this.state;
-      reservas = reservas.forEach((reserva)=>{
+      reservas = reservas.map((reserva)=>{
         if(reserva.key === reservaUpdated.key){
           return reservaUpdated;
         }else{
           return reserva;
         }
       });
+      console.log(reservas);
       this.setState({
         reservas
       });
@@ -72,7 +76,6 @@ class Reservas extends Component {
         reservas
       });
     });
-    
     
   }
 

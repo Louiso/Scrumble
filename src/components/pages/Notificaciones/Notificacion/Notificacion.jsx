@@ -199,6 +199,7 @@ class Notificacion extends Component {
   
   getButtons(){
     const { notificacion } = this.props;
+    /* SOLO SI ES DE RESERVA SE PUEDE CANCELAR ALLI MISMO O CONFIRMAR */
     if(notificacion.tipo === 'reserva'){
       return (
         <p className="mb-1">

@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import './BotonCancelar.css';
 import ReservaController from '../../../../controllers/Reservas';
+import UserController from '../../../../controllers/User';
 
 @inject('store') @observer
 export default class BotonCancelarLoading extends Component {
@@ -59,7 +60,7 @@ class BotonCancelar extends Component {
 
     }
     /* EMISOR : SOLICITANTE */
-    this.user.setId(reserva.emisor);
+    this.user = new UserController(reserva.emisor);
     await this.user.addNotificacion(notificacion);
   
   }
@@ -96,7 +97,7 @@ class BotonCancelar extends Component {
   }
   render() {
 
-    const { emisorProfile, user } = this.props;  
+    const { emisorProfile, user ,reserva } = this.props;  
     // El receptor que confirma no puede cancelar reserva // EL RECEPTOR ES EL CREADOR
     if(emisorProfile.key === user.uid){
       return (
@@ -105,6 +106,9 @@ class BotonCancelar extends Component {
         </button>
       )
     }else{
+      if(reserva.cancelado){
+        return ''
+      }
       return (
         <button onClick = {this.handleConcluir } type="button" className="btn btn-primary BotonConcluir">
           Concluir Reserva
