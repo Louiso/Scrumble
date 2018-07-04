@@ -11,7 +11,7 @@ export default class FormReservar extends Component {
   constructor(props){
     super(props);
     this.state = {
-      nAsientos: 1,
+      nasientos: 1,
       fechaReserva: moment()
     }
   }
@@ -24,7 +24,7 @@ export default class FormReservar extends Component {
         emisor        : this.props.userProfile.key,       // Quien lo solicita
         receptor      : this.props.creadorPost.key,       // Quien lo recibe
         post          : this.props.post.key,              // De que post surgio la reserva
-        nAsientos     : this.state.nAsientos,        // La cantidad de asientos
+        nAsientos     : this.state.nasientos,        // La cantidad de asientos
         fechaReserva          : this.state.fechaReserva._d.toISOString(), // La fecha de reserva
         confirmacion  : false,                            // para confirma la reserva
         fechaCreacion : moment()._d.toISOString(),
@@ -83,7 +83,7 @@ export default class FormReservar extends Component {
           maxTime={moment().hours(20).minutes(30)}
           dateFormat="LLL"
         />
-        <GroupInput text="nAsientos" value = {this.state.nAsientos} handleChange = { this.handleChange }/>
+        <GroupInput text="nAsientos" value = {this.state.nasientos} handleChange = { this.handleChange }/>
         <input type="submit" value="Enviar solicitud de reserva"/>
       </form>
     );
