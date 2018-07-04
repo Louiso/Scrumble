@@ -8,6 +8,8 @@ import firebase from 'firebase/app';
 
 import './PostAdd.css';
 
+import moment from 'moment';
+
 import PostController from '../../../controllers/Post';
 import UserController from '../../../controllers/User';
 
@@ -102,7 +104,8 @@ class PostAdd extends Component {
 				titulo,
 				descripcion,
 				urlPhoto,
-				userId: this.props.user.uid
+				userId: this.props.user.uid,
+				createAt: moment()._d.toISOString()
 			});
 
 			const _user = new UserController(this.props.user.uid);

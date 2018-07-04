@@ -31,6 +31,7 @@ class Notificacion extends Component {
     }
   }
   componentDidMount = async () => {
+    this.reserva = new ReservaController();
     this.user = new UserController(this.props.notificacion.emisor);
     const emisorProfile = await this.user.getUserProfile(); 
     this.setState({
@@ -40,6 +41,7 @@ class Notificacion extends Component {
 
   componentWillUnmount(){
     this.user.destroy();
+    this.reserva.destroy();
   }
 
   verNotificacion = () => {
@@ -68,7 +70,7 @@ class Notificacion extends Component {
   }
   handleConfirmar = async () => {
     this.verNotificacion();
-    this.reserva = new ReservaController(this.props.notificacion.origen);
+    this.reserva.setId(this.props.notificacion.origen);
     let reserva = await this.reserva.getReserva();
     reserva = {
       ...reserva,
@@ -78,38 +80,138 @@ class Notificacion extends Component {
     const { key } = reserva; 
     delete reserva.key;
     
+    /* Se actualiza la reserva */
     this.reserva.setReserva(reserva);
+  
+    /* Se guarda la reserva en emisor */
+    this.user.setId(reserva.emisor);
+    await this.user.setReserva(key,{
+      nAsientos: reserva.nAsientos,
+      fechaReserva: reserva.fechaReserva,
+      fechaCreacion: reserva.fechaCreacion
+    });
+
+    const { emisor, receptor } = reserva;
     
-    this.user = new UserController(reserva.emisor);
-    this.user.setReserva(key,reserva);
+    const notificacion = {
+      emisor: receptor,
+      receptor: emisor,
+      origen: key,
+      tipo: 'confirmar',
+      fechaCreacion: moment()._d.toISOString(),
+      visto: false,
+    }
+    /* El que mando la solicitud recibe mensaje de confirmacion */
+    await this.user.addNotificacion(notificacion);    
     
+    /* Se guarda la reserva en receptor */
     this.user.setId(reserva.receptor);
-    this.user.setReserva(key,reserva);
+    this.user.setReserva(key,{
+      nAsientos: reserva.nAsientos,
+      fechaReserva: reserva.fechaReserva,
+      fechaCreacion: reserva.fechaCreacion
+    });
 
   }
-  render() {
+
+  handleCancelar = async () => {
+    let keyReserva = this.props.notificacion.origen;
+    console.log(keyReserva);
+    this.reserva.setId(keyReserva);
+    
+    // /* CON ESTO SE CAMBIA EL ESTADO DE LA RESERVA A CANCELADO */
+    let reserva = await this.reserva.getReserva();
+    
+    reserva = {
+      ...reserva,
+      cancelado: true
+    }
+    delete reserva.key;
+    
+    await this.reserva.setReserva(reserva);
+    /* Enviar notificacion de cancelar */
+    /* SOY EL RECEPTOR */
+    const notificacion = {
+
+      emisor        : reserva.receptor,       // Quien crea la notificacion
+      tipo          : 'cancelar',                        // El tipo de notificacion que es
+      origen        : keyReserva,                       // El origen de la notificacion
+      visto         : false,
+      fechaCreacion : moment()._d.toISOString()
+
+    }
+
+    this.user.setId(reserva.emisor);
+    await this.user.addNotificacion(notificacion);
+    
+  }
+
+  
+
+  getColor(){
     const { notificacion } = this.props;
-    const { emisorProfile } = this.state;
     let color = null;
     if(!notificacion.visto){
       color = 'list-group-item-primary';
     }
-    return (
-      <div className={`list-group-item list-group-item-action flex-column align-items-start ${color}`}>
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">
-          {emisorProfile?(<Link onClick = {this.verNotificacion } to={`/perfil/${emisorProfile.key}`}>{emisorProfile.username}</Link>):''}
-          {` ha realizado una ${notificacion.tipo}`}
+    return color;
+  }
+
+  getMensaje(){
+    let mensaje;
+    const { notificacion } = this.props;
+    const { emisorProfile } = this.state;
+    const nombreEmisor = emisorProfile?(<Link onClick = {this.verNotificacion } to={`/perfil/${emisorProfile.key}`}>{emisorProfile.username}</Link>):'';     
+    switch(notificacion.tipo){
+      case 'reserva':
+        mensaje = (
+          <h5 className = "mb-1">
+            {nombreEmisor}{` ha realizado una reservacion`}
           </h5>
-          <small>{moment(notificacion.date).fromNow()}</small>
+        );  
+        break;
+      case 'confirmar':
+        mensaje = (
+          <h5 className = "mb-1">
+            {nombreEmisor}{` confirmo su reservacion`}
+          </h5>
+        );  
+      break;
+      default:
+        break;
+    }
+    return mensaje;
+  }
+  
+  getButtons(){
+    const { notificacion } = this.props;
+    if(notificacion.tipo === 'reserva'){
+      return (
+        <p className="mb-1">
+          <button onClick = {this.handleCancelar } type="button" className="btn btn-danger">
+            Cancelar Reserva
+          </button>
+          <button onClick = {this.handleConfirmar } type="button" className="btn btn-success">
+            Confirmar Reserva
+          </button>
+        </p>
+      );
+    }
+    return '';
+    
+  }
+
+  render() {
+    const { notificacion } = this.props;
+    return (
+      <div className={`list-group-item list-group-item-action flex-column align-items-start ${this.getColor()}`}>
+        <div className="d-flex w-100 justify-content-between">
+          {this.getMensaje()}
+          <small>{moment(notificacion.fechaCreacion).fromNow()}</small>
         </div>
         <div className="d-flex w-100 justify-content-between align-items-center">
           <small onClick={this.verDetallesNotificacion} >Ver detalles</small>
-          <p className="mb-1">
-            <button onClick = {this.handleConfirmar } type="button" className="btn btn-success">
-              Confirmar Reserva
-            </button>
-          </p>
+          { this.getButtons() }
         </div>
         { this.state.verDetalles?(
           <div>

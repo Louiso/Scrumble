@@ -16,6 +16,11 @@ export default class ReservaController extends Controller{
   setReserva(reserva){
     this.__setData(this.ref,reserva);
   }
+
+  removeReserva(){
+    this.__removeData(this.ref);
+  }
+
   getReserva(){
     const ref = this.ref;
     return this.__getData(ref);

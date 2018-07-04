@@ -11,8 +11,8 @@ export default class FormReservar extends Component {
   constructor(props){
     super(props);
     this.state = {
-      numeroasientos: 1,
-      date: moment()
+      nAsientos: 1,
+      fechaReserva: moment()
     }
   }
   handleSubmit = async (e) => {
@@ -22,11 +22,14 @@ export default class FormReservar extends Component {
       const reserva = {
         
         emisor        : this.props.userProfile.key,       // Quien lo solicita
-        receptor      : this.props.creadorPost.key,     // Quien lo recibe
+        receptor      : this.props.creadorPost.key,       // Quien lo recibe
         post          : this.props.post.key,              // De que post surgio la reserva
-        numeroasientos: this.state.numeroasientos,        // La cantidad de asientos
-        date          : this.state.date._d.toISOString(), // La fecha de reserva
-        confirmacion  : false                             // para confirma la reserva
+        nAsientos     : this.state.nAsientos,        // La cantidad de asientos
+        fechaReserva          : this.state.fechaReserva._d.toISOString(), // La fecha de reserva
+        confirmacion  : false,                            // para confirma la reserva
+        fechaCreacion : moment()._d.toISOString(),
+        completado    : false,
+        cancelado     : false
 
       };
       const _reserva = new ReservaController();
@@ -36,32 +39,20 @@ export default class FormReservar extends Component {
 
       const notificacion = {
 
-        emisor      : this.props.userProfile.key,       // Quien crea la notificacion
-        tipo        : 'reserva',                        // El tipo de notificacion que es
-        origen      : keyReserva,                       // El origen de la notificacion
-        date        : this.state.date._d.toISOString(),  // La hora en que se creo la notificacion
-        visto       : false
-        
+        emisor        : this.props.userProfile.key,       // Quien crea la notificacion
+        tipo          : 'reserva',                        // El tipo de notificacion que es
+        origen        : keyReserva,                       // El origen de la notificacion
+        fechaReserva          : this.state.fechaReserva._d.toISOString(),  // La hora en que se creo la notificacion
+        visto         : false,
+        fechaCreacion : reserva.fechaCreacion
+
       }
 
       /* AGREGANDO NOTIFICACION Y RESERVA EN EL CREADOR DEL POST */
-
       const _user = new UserController(this.props.creadorPost.key);
       await _user.addNotificacion(notificacion);
       
-      // await _user.setReserva(keyReserva,{
-      //   emisor: reserva.emisor,
-      //   post: reserva.post,
-      //   date: reserva.date
-      // });
-
-      /* AGREGANDO RESERVA EN EL USUARIO QUE SOLICITO */
-      // _user.setId(this.props.userProfile.key);
-      // await _user.setReserva(keyReserva,{
-      //   receptor: reserva.receptor,
-      //   post: reserva.post,
-      //   date: reserva.date
-      // });
+      /* LAS RESERVAS SE AGREGAN A LOS USUARIOS CUANDO SON CONFIRMADAS */
     
     }catch(e){
       
@@ -70,9 +61,9 @@ export default class FormReservar extends Component {
     }
     
   }
-  handleChangeDate = (date) => {
+  handleChangeDate = (fechaReserva) => {
     this.setState({
-      date:date
+      fechaReserva:fechaReserva
     });
   }
   handleChange = (e) => {
@@ -85,14 +76,14 @@ export default class FormReservar extends Component {
     return (
       <form onSubmit = { this.handleSubmit }>
         <DatePicker
-          selected={this.state.date}
+          selected={this.state.fechaReserva}
           onChange={this.handleChangeDate}
           showTimeSelect
           minTime={moment().hours(17).minutes(0)}
           maxTime={moment().hours(20).minutes(30)}
           dateFormat="LLL"
         />
-        <GroupInput text="NumeroAsientos" value = {this.state.numeroasientos} handleChange = { this.handleChange }/>
+        <GroupInput text="nAsientos" value = {this.state.nAsientos} handleChange = { this.handleChange }/>
         <input type="submit" value="Enviar solicitud de reserva"/>
       </form>
     );

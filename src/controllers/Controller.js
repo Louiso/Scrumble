@@ -100,9 +100,27 @@ export class Controller{
   }
 
   __setData(ref,data){
-    return new Promise((resolve)=>{
-      ref.set(data);
-      resolve();
+    return new Promise((resolve,reject)=>{
+      ref.set(data)
+        .then(()=>{
+          resolve();
+        })
+        .catch((error)=>{
+          reject(error);
+        });
+      
+    });
+  }
+
+  __removeData(ref){
+    return new Promise((resolve,reject)=>{
+      ref.remove()
+        .then(()=>{
+          resolve();
+        })
+        .catch((error)=>{
+          reject(error);
+        });
     });
   }
 

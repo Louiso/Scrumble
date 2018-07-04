@@ -44,11 +44,11 @@ class Notificaciones extends Component {
         });
     
       },
-      (notificacionNueva)=>{
+      (notificacionUpdate)=>{
         let { notificaciones } = this.state;
         notificaciones = notificaciones.map((notificacion)=>{
-          if(notificacion.key === notificacionNueva.key){
-            return notificacionNueva;
+          if(notificacion.key === notificacionUpdate.key){
+            return notificacionUpdate;
           }else{
             return notificacion;
           }

@@ -1,0 +1,9 @@
+
+
+@media screen and (max-width: 600px){
+
+  .Mensaje{
+    font-size: 1em;
+    width: 60%;
+  }
+}

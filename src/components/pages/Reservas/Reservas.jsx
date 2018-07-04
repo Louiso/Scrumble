@@ -5,6 +5,7 @@ import './Reservas.css';
 import { inject , observer } from 'mobx-react';
 import ReservaController from '../../../controllers/Reservas';
 import Reserva from './Reserva/Reserva';
+import UserController from '../../../controllers/User';
 
 @inject('store') @observer
 export default class ReservasLoading extends Component {
@@ -32,19 +33,51 @@ class Reservas extends Component {
   }
 
   componentDidMount(){
+    this.user = new UserController(this.props.user.uid);
     this.reservas = new ReservaController();
-    this.reservas.getReservasRealTime(
-      (reserva)=>{
-        const { reservas } = this.state;
-        reservas.push(reserva);
-        this.setState({
-          reservas
-        }); 
-      }
-    );
+    /* OBTENIENDO RESERVAS SOLO DEL USUARIO */
+    this.user.getReservacionesRealTime( async (reserva)=>{
+
+      let { reservas } = this.state;
+      /* OBTENIENDO LA RESERVA COMPLETA  */
+      this.reservas.setId(reserva.key);  
+      reserva = await this.reservas.getReserva();
+      
+      reservas.push(reserva);
+      
+      this.setState({
+        reservas
+      });
+
+    },
+    (reservaUpdated)=>{
+      let { reservas } = this.state;
+      reservas = reservas.forEach((reserva)=>{
+        if(reserva.key === reservaUpdated.key){
+          return reservaUpdated;
+        }else{
+          return reserva;
+        }
+      });
+      this.setState({
+        reservas
+      });
+    },
+    (reservaRemoved)=>{
+      let { reservas } = this.state;
+      reservas = reservas.filter((reserva)=>{
+        return reserva.key !== reservaRemoved.key
+      });
+      this.setState({
+        reservas
+      });
+    });
+    
+    
   }
 
   componentWillUnmount(){
+    this.user.destroy();
     this.reservas.destroy();
   }
 

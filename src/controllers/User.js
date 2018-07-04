@@ -109,5 +109,10 @@ export default class UserController extends Controller{
     return this.__getData(ref);
   
   }
+  removeReserva(id){
+    const ref = this.ref.child(`/reservas/${id}`);
+    this.__removeData(ref);
+  }
+
 
 }
