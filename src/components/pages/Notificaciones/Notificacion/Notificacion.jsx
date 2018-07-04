@@ -180,7 +180,7 @@ class Notificacion extends Component {
       case 'cancelar':
         mensaje = (
           <h5 className = "mb-1">
-            {nombreEmisor}{` no cancelo la reservacion`}
+            {nombreEmisor}{` cancelo la reservacion`}
           </h5>          
         );
         break;
